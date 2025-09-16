@@ -1,0 +1,122 @@
+allow_tables:
+  - clients
+  - transactions
+  - transfers
+
+deny_columns:
+  - iin
+  - phoneNum
+  - name
+
+allow_functions:
+  - sum
+  - count
+  - avg
+  - min
+  - max
+  - nullif
+  - coalesce
+  - date_trunc
+  - extract
+  - to_char
+  - YEAR
+  - MONTH
+  - DAY
+  - HOUR
+  - MINUTE
+  - SECOND
+  - WEEK
+  - QUARTER
+
+join_graph:
+  - { left: "transactions.client_code", right: "clients.client_code" }
+  - { left: "transfers.client_code", right: "clients.client_code" }
+
+limits:
+  max_rows: 50000
+  max_cost: 100000000
+  max_bytes_scanned: 5000000000
+  statement_timeout_ms: 30000
+
+glossary:
+  средний баланс:
+    metric: avg_balance
+    formula: "AVG(avg_monthly_balance_KZT)"
+    tables: ["clients"]
+    grain: ["status", "city", "month"]
+
+  общий оборот:
+    metric: total_turnover
+    formula: "SUM(amount)"
+    tables: ["transactions", "transfers"]
+    grain: ["client_code", "date", "category", "type"]
+
+  количество транзакций:
+    metric: transaction_count
+    formula: "COUNT(*)"
+    tables: ["transactions"]
+    grain: ["client_code", "date", "category"]
+
+  средний чек транзакции:
+    metric: avg_transaction_amount
+    formula: "AVG(amount)"
+    tables: ["transactions"]
+    grain: ["category", "date", "city"]
+
+  количество переводов:
+    metric: transfer_count
+    formula: "COUNT(*)"
+    tables: ["transfers"]
+    grain: ["client_code", "date", "type", "direction"]
+
+  средний размер перевода:
+    metric: avg_transfer_amount
+    formula: "AVG(amount)"
+    tables: ["transfers"]
+    grain: ["type", "direction", "date"]
+
+  активность клиентов:
+    metric: client_activity
+    formula: "COUNT(DISTINCT client_code)"
+    tables: ["transactions", "transfers"]
+    grain: ["date", "city", "status"]
+
+  топ категории трат:
+    metric: top_spending_categories
+    formula: "SUM(amount)"
+    tables: ["transactions"]
+    grain: ["category", "month"]
+
+  возрастная структура:
+    metric: age_distribution
+    formula: "COUNT(*)"
+    tables: ["clients"]
+    grain: ["age_group", "status", "city"]
+
+  региональное распределение:
+    metric: regional_distribution
+    formula: "COUNT(*)"
+    tables: ["clients"]
+    grain: ["city", "status"]
+
+  премиальные клиенты:
+    metric: premium_clients
+    formula: "COUNT(*)"
+    tables: ["clients"]
+    grain: ["city", "month"]
+    filter: "status = 'Премиальный клиент'"
+
+enumerables:
+  - transactions.category
+  - transfers.type
+  - transfers.direction
+  - clients.status
+  - clients.city
+  - transactions.city
+  - transfers.city
+  - transactions.product
+  - transfers.product
+  - transactions.currency
+  - transfers.currency
+  - transactions.status
+  - transfers.status
