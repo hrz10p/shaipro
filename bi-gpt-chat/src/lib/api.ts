@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://65.109.13.247:8001';
+const API_BASE_URL = 'https://bi-gpt.enbekqor.kz';
 
 export interface ChatRequest {
   message: string;
