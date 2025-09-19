@@ -64,7 +64,7 @@ export const useChat = () => {
       setMessages(prev => 
         prev.filter(msg => msg.id !== loadingMessage.id).concat({
           id: (Date.now() + 2).toString(),
-          content: response.reply,
+          content: response.output,
           sender: 'assistant',
           timestamp: new Date(),
           apiResponse: response

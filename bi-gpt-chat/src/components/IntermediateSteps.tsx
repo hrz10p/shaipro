@@ -4,8 +4,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Settings, Database, Shield, CheckCircle } from "lucide-react";
 
 interface IntermediateStep {
-  action: string;
-  result: any;
+  node: string;
+  output: any;
 }
 
 interface IntermediateStepsProps {
@@ -66,29 +66,29 @@ export const IntermediateSteps = ({ steps }: IntermediateStepsProps) => {
               {/* Step Content */}
               <div className="flex-1 space-y-2">
                 <div className="flex items-center gap-2">
-                  {getStepIcon(step.action)}
+                  {getStepIcon(step.node)}
                   <span className="text-sm font-medium">
-                    {getStepLabel(step.action)}
+                    {getStepLabel(step.node)}
                   </span>
                   <Badge 
                     variant="outline" 
-                    className={`text-xs px-2 py-0.5 ${getStepColor(step.action)}`}
+                    className={`text-xs px-2 py-0.5 ${getStepColor(step.node)}`}
                   >
-                    {step.action}
+                    {step.node}
                   </Badge>
                 </div>
                 
                 {/* Step Result */}
                 <div className="ml-6">
-                  {typeof step.result === 'object' ? (
+                  {typeof step.output === 'object' ? (
                     <ScrollArea className="max-h-32">
                       <pre className="text-xs bg-muted p-3 rounded border text-muted-foreground overflow-x-auto">
-                        {JSON.stringify(step.result, null, 2)}
+                        {JSON.stringify(step.output, null, 2)}
                       </pre>
                     </ScrollArea>
                   ) : (
                     <div className="text-xs text-muted-foreground bg-muted p-2 rounded border">
-                      {String(step.result)}
+                      {String(step.output)}
                     </div>
                   )}
                 </div>

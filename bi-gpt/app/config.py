@@ -15,7 +15,7 @@ class AppConfig:
     llm_api_key: str = os.getenv("LLM_API_KEY", "")
     llm_model: str = os.getenv("LLM_MODEL", "llama4scout")
     sql_adapter_base_url: str = os.getenv("SQL_ADAPTER_BASE_URL", "http://localhost:8000")
-
+    mcp_url: str = os.getenv("MCP_URL", "http://localhost:8001/mcp")
 
 @lru_cache(maxsize=1)
 def get_config() -> AppConfig:

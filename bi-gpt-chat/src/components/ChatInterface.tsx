@@ -7,6 +7,7 @@ import { Loader2, Send, Brain } from "lucide-react";
 import { ChatMessage } from "./ChatMessage";
 import { ConnectionStatus } from "./ConnectionStatus";
 import { useChat } from "@/hooks/useChat";
+import { apiService } from "@/lib/api";
 
 export const ChatInterface = () => {
   const [inputValue, setInputValue] = useState("");
@@ -40,6 +41,16 @@ export const ChatInterface = () => {
       handleSendMessage();
     }
   };
+
+  const handleClearMemory = async () => {
+    try {
+      await apiService.clearMemory();
+      // Optionally clear local messages too
+      clearMessages();
+    } catch (error) {
+      console.error('Failed to clear memory:', error);
+    }
+  };
   
   return (
     <div className="flex flex-col h-full">
@@ -48,6 +59,7 @@ export const ChatInterface = () => {
         isConnected={isConnected}
         onRetry={checkConnection}
         onClearChat={clearMessages}
+        onClearMemory={handleClearMemory}
         hasMessages={messages.length > 0}
       />
 
@@ -67,7 +79,7 @@ export const ChatInterface = () => {
                 <div className="text-xs opacity-75">Примеры запросов:</div>
                 <div className="italic">"Найди самую большую транзакцию за каждую неделю"</div>
                 <div className="italic">"Покажи топ-10 клиентов по сумме покупок"</div>
-                <div className="italic">"Какая категория трат самая популярная?"</div>
+                <div className="italic">"Покажи распределение транзакций по топ 5 категориям"</div>
               </div>
             </div>
           ) : (
@@ -84,7 +96,7 @@ export const ChatInterface = () => {
                   <Card className="p-4 bg-card border">
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span className="text-sm">Анализирую запрос и выполняю SQL...</span>
+                      <span className="text-sm">Думаю...</span>
                     </div>
                   </Card>
                 </div>
@@ -120,7 +132,7 @@ export const ChatInterface = () => {
           </div>
           {!isConnected && (
             <p className="text-xs text-red-500 mt-2">
-              Не удается подключиться к серверу. Проверьте, что бэкенд запущен на localhost:8001
+              Не удается подключиться к серверу. Проверьте, что сервер работает
             </p>
           )}
         </div>

@@ -1,11 +1,12 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Wifi, WifiOff, RotateCcw } from "lucide-react";
+import { Wifi, WifiOff, RotateCcw, Trash2 } from "lucide-react";
 
 interface ConnectionStatusProps {
   isConnected: boolean;
   onRetry: () => void;
   onClearChat: () => void;
+  onClearMemory: () => void;
   hasMessages: boolean;
 }
 
@@ -13,6 +14,7 @@ export const ConnectionStatus = ({
   isConnected, 
   onRetry, 
   onClearChat, 
+  onClearMemory,
   hasMessages 
 }: ConnectionStatusProps) => {
   return (
@@ -38,15 +40,26 @@ export const ConnectionStatus = ({
           </Badge>
           
           {hasMessages && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClearChat}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <RotateCcw className="w-4 h-4 mr-1" />
-              Очистить чат
-            </Button>
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onClearChat}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <RotateCcw className="w-4 h-4 mr-1" />
+                Очистить чат
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onClearMemory}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <Trash2 className="w-4 h-4 mr-1" />
+                Очистить память
+              </Button>
+            </>
           )}
           
           {!isConnected && (

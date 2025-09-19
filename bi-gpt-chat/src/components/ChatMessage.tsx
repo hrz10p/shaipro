@@ -6,6 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ChevronDown, ChevronUp, Database, User, Bot, CheckCircle, XCircle } from "lucide-react";
 import { SQLResult } from "./SQLResult";
 import { IntermediateSteps } from "./IntermediateSteps";
+import { ChartVisualization } from "./ChartVisualization";
 
 import { ChatMessage as ChatMessageType } from "@/hooks/useChat";
 
@@ -56,7 +57,7 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
                 <div className="flex items-center gap-2">
                   <Database className="w-4 h-4" />
                   <Badge variant="secondary" className="text-xs">
-                    {message.apiResponse.tool_used}
+                    {message.apiResponse.route}
                   </Badge>
                   {message.apiResponse.success ? (
                     <Badge variant="default" className="text-xs bg-green-100 text-green-700 border-green-200">
@@ -74,9 +75,15 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
                 {/* SQL Result */}
                 <SQLResult response={message.apiResponse} />
                 
+                {/* Chart Visualization */}
+                {message.apiResponse.visualization && 
+                 message.apiResponse.success && message.apiResponse.visualization.chart_type !== 'error' && message.apiResponse.visualization.chart_type !== 'none' && (
+                  <ChartVisualization visualization={message.apiResponse.visualization} />
+                )}
+                
                 {/* Intermediate Steps */}
-                {message.apiResponse.tool_result.intermediate_steps && 
-                 message.apiResponse.tool_result.intermediate_steps.length > 0 && (
+                {message.apiResponse.intermediate_steps && 
+                 message.apiResponse.intermediate_steps.length > 0 && (
                   <Collapsible open={showSteps} onOpenChange={setShowSteps}>
                     <CollapsibleTrigger asChild>
                       <Button 
@@ -84,7 +91,7 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
                         size="sm" 
                         className="w-full justify-between text-muted-foreground hover:text-foreground"
                       >
-                        <span className="text-xs">Промежуточные шаги ({message.apiResponse.tool_result.intermediate_steps.length})</span>
+                        <span className="text-xs">Промежуточные шаги ({message.apiResponse.intermediate_steps.length})</span>
                         {showSteps ? (
                           <ChevronUp className="w-4 h-4" />
                         ) : (
@@ -93,7 +100,7 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
                       </Button>
                     </CollapsibleTrigger>
                     <CollapsibleContent className="mt-2">
-                      <IntermediateSteps steps={message.apiResponse.tool_result.intermediate_steps} />
+                      <IntermediateSteps steps={message.apiResponse.intermediate_steps} />
                     </CollapsibleContent>
                   </Collapsible>
                 )}

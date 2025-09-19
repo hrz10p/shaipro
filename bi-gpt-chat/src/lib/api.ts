@@ -5,17 +5,38 @@ export interface ChatRequest {
   context?: string;
 }
 
+export interface ChartData {
+  bin_start?: number;
+  bin_end?: number;
+  count?: number;
+  pct?: number;
+  [key: string]: any;
+}
+
+export interface ChartMeta {
+  title: string;
+  x_label: string;
+  y_label: string;
+  tooltip_fields: string[];
+}
+
+export interface Visualization {
+  chart_type: 'histogram' | 'pie' | 'scatter' | 'line' | 'error' | 'none';
+  meta: ChartMeta;
+  data: ChartData[];
+}
+
 export interface ChatResponse {
-  reply: string;
-  tool_used: string;
+  output: string;
   success: boolean;
-  tool_result: {
-    output: string;
-    intermediate_steps: Array<{
-      action: string;
-      result: any;
-    }>;
-  };
+  intermediate_steps: Array<{
+    node: string;
+    output: string | any;
+  }>;
+  route: string;
+  sql: string;
+  exec_result: any;
+  visualization?: Visualization;
 }
 
 export interface ApiError {
@@ -38,6 +59,7 @@ class ApiService {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Include cookies
         body: JSON.stringify(request),
       });
 
@@ -74,6 +96,34 @@ class ApiService {
       return response.ok;
     } catch {
       return false;
+    }
+  }
+
+  async clearMemory(): Promise<{success: boolean, message: string}> {
+    try {
+      const response = await fetch(`${this.baseUrl}/clear-memory`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Include cookies
+      });
+      
+      if (!response.ok) {
+        throw new ApiError(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      
+      throw new ApiError(
+        `Network error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        0
+      );
     }
   }
 }

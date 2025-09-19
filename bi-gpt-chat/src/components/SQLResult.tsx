@@ -12,6 +12,7 @@ interface SQLResultProps {
 export const SQLResult = ({ response }: SQLResultProps) => {
   // Parse the reply to extract SQL and results
   const parseReply = (reply: string) => {
+    reply = reply || '';
     const sqlMatch = reply.match(/SQL:\s*\n([\s\S]*?)\n\n/);
     const resultsMatch = reply.match(/Results:\s*(\[[\s\S]*?\])/);
     const rowsMatch = reply.match(/Rows returned:\s*(\d+)/);
@@ -32,7 +33,7 @@ export const SQLResult = ({ response }: SQLResultProps) => {
     return { sql, results, rowCount };
   };
   
-  const { sql, results, rowCount } = parseReply(response.reply);
+  const { sql, results, rowCount } = parseReply(response.sql);
   
   // Get column names from first result
   const columns = results.length > 0 ? Object.keys(results[0]) : [];
@@ -43,7 +44,9 @@ export const SQLResult = ({ response }: SQLResultProps) => {
       {response.success ? (
         <div className="flex items-center gap-2 text-green-600">
           <CheckCircle className="w-4 h-4" />
-          <span className="text-sm font-medium">Запрос выполнен успешно</span>
+          <span className="text-sm font-medium">
+            {response.route === 'sql_query' ? 'Запрос выполнен успешно' : 'Сообщение обработано успешно'}
+          </span>
         </div>
       ) : (
         <div className="flex items-center gap-2 text-red-600">
@@ -136,7 +139,7 @@ export const SQLResult = ({ response }: SQLResultProps) => {
           </CardHeader>
           <CardContent>
             <div className="text-sm text-red-700 bg-red-100 p-3 rounded-md">
-              {response.reply}
+              {response.output}
             </div>
           </CardContent>
         </Card>

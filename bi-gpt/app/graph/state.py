@@ -8,3 +8,4 @@ class GraphState(TypedDict, total=False):
     exec_result: Optional[Dict[str, Any]]
     intermediate_steps: List[Dict[str, Any]]
     final_text: Optional[str]
+    visualization: Optional[Dict[str, Any]]
