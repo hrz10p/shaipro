@@ -6,7 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_config
 from app.models import ChatRequest, ChatResponse
 from app.clients.http_client import SqlAdapterClient, get_sql_adapter_client, QueryResult, SQLQuery
-from app.agent.agent import get_bigpt_agent
+
+from app.graph.factory import get_bigpt_graph
+from app.config import get_config
 
 
 app = FastAPI(title="bi-gpt", version="0.1.0")
@@ -26,16 +28,30 @@ async def health(request: Request) -> dict:
     return {"status": "ok"}
 
 
-@app.post("/chat", response_model=ChatResponse)
+@app.post("/chat")
 async def chat(
     body: ChatRequest,
-    sql_client: SqlAdapterClient = Depends(get_sql_adapter_client),
-) -> ChatResponse:
-    agent = await get_bigpt_agent(sql_client)
-    
-    result = await agent.handle_message(body.message, body.context)
-    return ChatResponse(**result)
+    http_client: SqlAdapterClient = Depends(get_sql_adapter_client),  # 👈 тут
+):
+    config = get_config()
+    graph = await get_bigpt_graph(http_client, config)
 
+    initial_state = {
+        "user_input": body.message,
+        "context": body.context or {},
+        "intermediate_steps": []
+    }
+
+    state = await graph.ainvoke(initial_state)
+
+    return {
+        "success": True,
+        "output": state.get("final_text"),
+        "route": state.get("route"),
+        "sql": state.get("sql"),
+        "intermediate_steps": state.get("intermediate_steps"),
+        "exec_result": state.get("exec_result"),
+    }
 
 @app.post("/exec", response_model=QueryResult)
 async def exec(
