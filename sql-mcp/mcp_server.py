@@ -1,13 +1,9 @@
-#!/usr/bin/env python3
-"""
-MCP Server implementation using fastmcp for SQL Proxy Adapter
-"""
 import json
 from fastmcp import FastMCP
 from service import db_service
 from schemas import QueryResult, SQLQuery, ExplainResult, MetaInfo, PolicyInfo
 
-mcp = FastMCP("SQL Proxy Adapter")
+mcp = FastMCP("SQL MCP")
 
 @mcp.tool()
 def execute_query(request: SQLQuery) -> QueryResult:

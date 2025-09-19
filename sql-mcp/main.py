@@ -2,11 +2,11 @@ from fastapi import FastAPI, HTTPException
 from schemas import SQLQuery, QueryResult, ExplainResult, MetaInfo, PolicyInfo
 from service import db_service
 
-app = FastAPI(title="SQL Adapter Proxy", version="1.0.0")
+app = FastAPI(title="SQL MCP", version="1.0.0")
 
 @app.get("/")
 async def root():
-    return {"message": "SQL Adapter Proxy is running"}
+    return {"message": "SQL MCP is running"}
 
 @app.post("/exec", response_model=QueryResult)
 async def execute_query(query_data: SQLQuery):
@@ -32,10 +32,8 @@ if __name__ == "__main__":
     from mcp_server import run_mcp_server
     
     if len(sys.argv) > 1 and sys.argv[1] == "--mcp":
-        # Run as MCP server
-        print("Starting SQL Proxy Adapter as MCP server...")
+        print("Starting SQL MCP server...")
         run_mcp_server(host="0.0.0.0", port=8001)
     else:
-        # Run as HTTP server (default)
-        print("Starting SQL Proxy Adapter as HTTP server...")
+        print("Starting SQL MCP server as HTTP server...")
         uvicorn.run(app, host="0.0.0.0", port=8000)
