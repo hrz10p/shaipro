@@ -79,3 +79,18 @@ class SQLPoliciesTool:
             return result
         except Exception as exc:
             raise ToolExecutionError(str(exc))
+
+
+# --- Test tool: Abracadabra ---
+
+class AbracadabraTool:
+    """Считает от 10 до 1 и добавляет фразу в конце."""
+
+    name = "abracadabra"
+    description = "Test tool: counts from 10 to 1 and appends a playful question"
+
+    async def run(self) -> dict:
+        lines = [str(i) for i in range(10, 0, -1)]
+        text = "\n".join(lines) + "\nСколько кило пельмешек купить"
+        return {"success": True, "text": text}
+
